@@ -1,12 +1,19 @@
 # Mobula 7 Betaflight setup
 
-Configuration for a Mobula 7 1S with the **HAMO CRAZYBEEF4SX1280** flight controller, based on the local Betaflight 2026.6.2 exports. The ready to paste CLI file is [config/mobula7-setup.cli](config/mobula7-setup.cli).
+Configuration for a Mobula 7 1S with the **HAMO CRAZYBEEF4SX1280** flight controller, based on the local Betaflight 2026.6.2 exports. Each CLI file can be applied independently:
+
+| File | Changes |
+| --- | --- |
+| [config/vtx.cli](config/vtx.cli) | Six-band VTX table and Raceband R8 at 5917 MHz, power level 3 |
+| [config/arm-aux1.cli](config/arm-aux1.cli) | ARM on AUX1 high; AUX1 low disarms |
+| [config/flight-modes-aux3.cli](config/flight-modes-aux3.cli) | ANGLE on AUX3 low, HORIZON on AUX3 middle, ACRO on AUX3 high |
 
 ## Switches and video
 
 | Function | Radio channel | Active position | Betaflight CLI |
 | --- | --- | --- | --- |
 | ARM | AUX1 | High, 1700–2100 µs | `aux 0 0 0 1700 2100 0 0` |
+| DISARM | AUX1 | Low, below 1700 µs | ARM range inactive; no separate CLI mode |
 | ANGLE | AUX3 | Low, 900–1300 µs | `aux 1 1 2 900 1300 0 0` |
 | HORIZON | AUX3 | Middle, 1300–1700 µs | `aux 2 2 2 1300 1700 0 0` |
 | ACRO | AUX3 | High, above 1700 µs | No mode range; default when neither self-leveling mode is active |
@@ -19,11 +26,11 @@ VTX is set to **Raceband R8, 5917 MHz, power level 3 (label 25)**. The CLI inclu
 
 1. Remove propellers. In Betaflight Configurator, connect and save a fresh `diff all` backup for this exact flight controller.
 2. Confirm the target is `CRAZYBEEF4SX1280` and firmware is compatible with the saved 2026.6.2 CLI syntax. Do not paste this on another board.
-3. Open **CLI**, paste the contents of `config/mobula7-setup.cli`, and wait for the `save` command to reboot the controller.
+3. Open **CLI** and paste one desired file at a time. Each file ends with `save`, which reboots the controller. Reconnect before applying another file. The files have no dependency on one another; apply all three for the complete setup.
 4. In **Receiver**, confirm AUX1 goes low/high with the arm switch and AUX3 goes low/middle/high with the mode switch. In **Modes**, confirm ARM, ANGLE and HORIZON activate only in the expected positions. Check that ACRO is selected at AUX3 high.
 5. With propellers still removed, check motor direction, receiver failsafe, arming behavior, and the VTX channel in Betaflight. Refit propellers only after these checks.
 
-This file is an **incremental setup**: it does not run `defaults nosave` or restore unrelated calibration, PID, radio binding, motor, or OSD values from an old export. Back up and check those settings separately after any firmware flash. The saved `expresslrs_uid` and board `mcu_id` are intentionally omitted from the public setup.
+These files are **incremental setups**: they do not run `defaults nosave` or restore unrelated calibration, PID, radio binding, motor, or OSD values from an old export. Back up and check those settings separately after any firmware flash. The saved `expresslrs_uid` and board `mcu_id` are intentionally omitted from the public setup.
 
 ## Source notes
 
@@ -31,20 +38,14 @@ This file is an **incremental setup**: it does not run `defaults nosave` or rest
 - AUX1 ARM and AUX3 ANGLE/HORIZON mapping: `modesaux.txt` (the newer mode mapping supplied in this folder).
 - Earlier exports differ: the September 2026 backup uses AUX2 for flight modes, and its ARM threshold starts at 1850 µs. This setup follows `modesaux.txt`; confirm the radio's actual channel output before flight.
 
-## Publish to GitHub
+## Push changes to GitHub
 
-From the parent `mobula7` directory, after reviewing the files:
-
-```bash
-cd mobula_7
-git add .gitignore README.md config/mobula7-setup.cli
-git commit -m "Add Mobula 7 VTX and AUX setup"
-gh repo create mobula_7 --private --source=. --remote=origin --push
-```
-
-The `gh` command requires [GitHub CLI](https://cli.github.com/) and `gh auth login`. To use an existing empty GitHub repository instead of creating one:
+The repository and `origin` already exist. From this repository directory:
 
 ```bash
-git remote add origin https://github.com/YOUR_USERNAME/mobula_7.git
-git push -u origin main
+git add README.md config/
+git commit -m "Split Mobula 7 VTX, arm, and flight modes"
+git push origin main
 ```
+
+If this is a different checkout without a remote, add the existing repository with `git remote add origin https://github.com/datatomas/mobula_7.git` before pushing.

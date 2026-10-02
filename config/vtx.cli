@@ -1,12 +1,6 @@
 # Mobula 7 1S / HAMO CRAZYBEEF4SX1280 / Betaflight 2026.6.2
-# Incremental setup: no defaults reset or receiver binding data.
+# VTX only. Raceband R8, 5917 MHz, power level 3 (label 25).
 
-# ARM on AUX1 high; ANGLE on AUX3 low; HORIZON on AUX3 middle.
-aux 0 0 0 1700 2100 0 0
-aux 1 1 2 900 1300 0 0
-aux 2 2 2 1300 1700 0 0
-
-# VTX table from the saved configuration.
 vtxtable bands 6
 vtxtable channels 8
 vtxtable band 1 BOSCAM_A A CUSTOM 5865 5845 5825 5805 5785 5765 5745 5725
