@@ -3,5 +3,7 @@ BTFL_cli_*.txt
 dronelatestsettins.txt
 finalfirmware.txt
 *.hex
+!firmware/
+!firmware/*.hex
 videos/
 .DS_Store
