@@ -22,6 +22,16 @@ ed0fe8c7947e4bb7b5278802544947e072ca98e470e0adb7f288167250eaaa98  firmware/betaf
 
 To check the downloaded file, run `sha256sum firmware/*.hex` from the repository directory and compare it with the value above.
 
+### Get a newer firmware build from Betaflight
+
+1. Remove the propellers and save a current `diff all` backup before flashing. Open **Betaflight Configurator → Firmware Flasher**. You can choose the firmware build **before connecting** to the flight controller.
+2. In **Board & Build**, select `CRAZYBEEF4SX1280` and choose the newest compatible version offered in the version list. The reference screenshot shows **2026.6.2**; that is the version selected in the screenshot, not a promise that it is still the newest release. Use **Detect** only when the controller is connected and the detected target matches. See the [Board & Build screenshot](docs/images/firmware-board-and-build.png).
+3. Enable **Expert Mode** to reveal **Custom Defines**. Select the build features needed by this board, including the radio and VTX options. Add the gyro driver define for the **actual gyro chip on your board** in Custom Defines before building. This is a build option, not a CLI command to paste after flashing. The screenshot's Custom Defines field is empty, so it does not record which define was used. Betaflight's [target definition](https://github.com/betaflight/unified-targets/blob/master/configs/default/HAMO-CRAZYBEEF4SX1280.config) lists several possible gyro chips; a define for one chip should not be assumed to work on every board revision. Betaflight documents the [Custom Defines syntax](https://betaflight.com/docs/wiki/app/firmware-flasher-tab#custom-defines).
+4. Choose **Load Firmware [Online]** and wait for the build to complete. On the **Flash** tab, confirm the target and version, then flash. See the [Flash screenshot](docs/images/firmware-flash.png). Save the generated HEX file if you want to preserve the exact build you used.
+5. Reconnect and check the reported target and firmware version. In **Sensors** or CLI `status`, confirm a gyro is detected before restoring configuration or attempting to arm. If the gyro is missing, verify the physical gyro chip and rebuild with its matching driver define.
+
+The included local HEX is a separate saved image whose filename says 2026.6.1. The screenshots show an online build of 2026.6.2; they do not establish that the included HEX is that same build.
+
 ## Switches and video
 
 | Function | Radio channel | Active position | Betaflight CLI |
@@ -39,7 +49,7 @@ VTX is set to **Raceband R8, 5917 MHz, power level 3 (label 25)**. The CLI inclu
 ## Apply
 
 1. Remove propellers. In Betaflight Configurator, connect and save a fresh `diff all` backup for this exact flight controller.
-2. Confirm the target is `CRAZYBEEF4SX1280` and firmware accepts the CLI commands. If flashing the included image, use Betaflight Configurator's **Firmware Flasher** to load the local HEX file, flash it, then reconnect and confirm the reported target and version. Do not flash it to another board.
+2. Confirm the target is `CRAZYBEEF4SX1280` and firmware accepts the CLI commands. To flash the included image, use Betaflight Configurator's **Firmware Flasher** to load the local HEX file, flash it, then reconnect and confirm the reported target, version, and gyro detection. To build a newer image, follow the steps above. Do not flash either image to another board.
 3. Open **CLI** and paste one desired file at a time. Each file ends with `save`, which reboots the controller. Reconnect before applying another file. The files have no dependency on one another; apply all three for the complete setup.
 4. In **Receiver**, confirm AUX1 goes low/high with the arm switch and AUX3 goes low/middle/high with the mode switch. In **Modes**, confirm ARM, ANGLE and HORIZON activate only in the expected positions. Check that ACRO is selected at AUX3 high.
 5. With propellers still removed, check motor direction, receiver failsafe, arming behavior, and the VTX channel in Betaflight. Refit propellers only after these checks.
