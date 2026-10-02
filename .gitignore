@@ -1,0 +1,7 @@
+# Raw exports may contain receiver binding data and board identifiers.
+BTFL_cli_*.txt
+dronelatestsettins.txt
+finalfirmware.txt
+*.hex
+videos/
+.DS_Store
